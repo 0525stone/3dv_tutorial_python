@@ -71,8 +71,10 @@ img3 = cv2.drawMatches(img1 = img1,
 H,W,C = img1.shape
 merge = cv2.warpPerspective(img1,M,(W*2,H)) # img
 merge2 = cv2.warpPerspective(img2,M,(W*2,H)) # img
-img4 = cv2.hconcat([merge,img2])
-img_ = cv2.hconcat([img1,img2])
+img4 = cv2.hconcat([merge,img1])
+img4_ = cv2.hconcat([merge2,img2])
+img4 = cv2.vconcat([img4, img4_])
+# img_ = cv2.hconcat([img1,img2])
 
 
 
