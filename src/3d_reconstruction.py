@@ -16,3 +16,5 @@ img2_dir = '../data/sample5.jpeg'
 
 img1 = cv2.imread(img1_dir)
 img2 = cv2.imread(img2_dir)
+
+# fundamental part
