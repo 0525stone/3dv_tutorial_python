@@ -63,7 +63,7 @@ def BF_FeatureMatcher(des1, des2):
     no_of_matches = brute_force.match(des1, des2)
 
     # finding the humming distance of the matches and sorting them
-    no_of_matches = sorted(no_of_matches, key=lambda x: x.distance)
+    no_of_matches = sorted(no_of_matches, key=lambda x: x.distance) # hamming distance의 순서별로
     return no_of_matches
 
 
@@ -92,8 +92,6 @@ if __name__ == '__main__':
     # sorting the number of best matches obtained from brute force matcher
     number_of_matches = BF_FeatureMatcher(descrip1, descrip2)
     tot_feature_matches = len(number_of_matches)
-
-    # printing total number of feature matches found
     print(f'Total Number of Features matches found are {tot_feature_matches}')
 
     # after drawing the feature matches displaying the output image
