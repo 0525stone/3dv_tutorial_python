@@ -71,14 +71,18 @@ def BF_FeatureMatcher(des1, des2):
 def display_output(pic1, kpt1, pic2, kpt2, best_match):
     # drawing the feature matches using drawMatches() function
     output_image = cv2.drawMatches(pic1, kpt1, pic2, kpt2, best_match, None, flags=2)
+
+    cv2.imwrite('save_.jpg',output_image)
     cv2.imshow('Output image', output_image)
+    # plt.imshow(output_image)
+    # plt.show()
 
 
 # main function
 if __name__ == '__main__':
     # giving the path of both of the images
-    first_image_path = '../data/a1.jpeg'
-    second_image_path = '../data/a2.jpeg'
+    first_image_path = '../data/s10.jpeg'
+    second_image_path = '../data/s12.jpeg'
 
     # reading the image from there paths
     img1, img2 = read_image(first_image_path, second_image_path)
@@ -96,6 +100,15 @@ if __name__ == '__main__':
 
     # after drawing the feature matches displaying the output image
     display_output(gray_pic1, key_pt1, gray_pic2, key_pt2, number_of_matches)
+
+    # 확인해볼 지표
+    print(f'key point : {type(key_pt1)}, len : {len(key_pt1)}, len : {len(key_pt2)}')
+
+    # find fundamental matrix
+    # opencv api : https://docs.opencv.org/4.x/d9/d0c/group__calib3d.html#ga59b0d57f46f8677fb5904294a23d404a
+    # funda, mask = cv2.findFundamentalMat(np.array(key_pt1), np.array(key_pt2), cv2.FM_RANSAC,3,0.99,10)
+    # print(funda)
+
     cv2.waitKey()
     cv2.destroyAllWindows()
 
