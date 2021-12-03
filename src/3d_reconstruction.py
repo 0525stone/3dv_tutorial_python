@@ -4,10 +4,12 @@ reconstructing from 2d points to 3D points by several images by finding Fundamen
 # 출처 ; https://www.geeksforgeeks.org/feature-matching-using-brute-force-in-opencv/
 
 data : 직접 구할 필요가 있음...
+image datatype : https://wjddyd66.github.io/opencv/OpenCV(3)/
 
 keyword : camera calibration, 3d reconstruction
 """
 # Libraries
+import os
 import cv2
 import matplotlib.pyplot as plt
 import numpy as np
@@ -68,11 +70,11 @@ def BF_FeatureMatcher(des1, des2):
 
 
 # function displaying the output image with the feature matching
-def display_output(pic1, kpt1, pic2, kpt2, best_match):
+def display_output(pic1, kpt1, pic2, kpt2, best_match,savename=''):
     # drawing the feature matches using drawMatches() function
     output_image = cv2.drawMatches(pic1, kpt1, pic2, kpt2, best_match, None, flags=2)
 
-    cv2.imwrite('save_.jpg',output_image)
+    cv2.imwrite(savename,output_image)
     cv2.imshow('Output image', output_image)
     # plt.imshow(output_image)
     # plt.show()
@@ -81,11 +83,20 @@ def display_output(pic1, kpt1, pic2, kpt2, best_match):
 # main function
 if __name__ == '__main__':
     # giving the path of both of the images
-    first_image_path = '../data/s10.jpeg'
-    second_image_path = '../data/s12.jpeg'
+    first_image_path = '../data/s04.jpeg'
+    second_image_path = '../data/s05.jpeg'
+
+    # save file name
+    save1 = first_image_path.split('/')[-1]
+    save2 = second_image_path.split('/')[-1]
+    save1 = save1.split('.')[0]
+    save2 = save2.split('.')[0]
+    savename = os.path.join('res_'+save1+'_'+save2+'.jpg')
+    print(savename)
 
     # reading the image from there paths
     img1, img2 = read_image(first_image_path, second_image_path)
+    img1 = img1.convertTo(img1, cv2.CV_32FC1, 1.0/255.0)
 
     # converting the readed images into the gray scale images
     gray_pic1, gray_pic2 = convert_to_grayscale(img1, img2)
@@ -99,13 +110,28 @@ if __name__ == '__main__':
     print(f'Total Number of Features matches found are {tot_feature_matches}')
 
     # after drawing the feature matches displaying the output image
-    display_output(gray_pic1, key_pt1, gray_pic2, key_pt2, number_of_matches)
+    # display_output(gray_pic1, key_pt1, gray_pic2, key_pt2, number_of_matches[:50],savename)
+
+    # draw matches manually
+    # display_output_
 
     # 확인해볼 지표
     print(f'key point : {type(key_pt1)}, len : {len(key_pt1)}, len : {len(key_pt2)}')
 
     # find fundamental matrix
     # opencv api : https://docs.opencv.org/4.x/d9/d0c/group__calib3d.html#ga59b0d57f46f8677fb5904294a23d404a
+
+    key_pt1 = np.asarray(key_pt1)
+    key_pt2 = np.asarray(key_pt2)
+
+    kp1 = key_pt1.copy()
+    kp2 = key_pt2.copy()
+    kp1 = np.asarray(kp1)
+    kp2 = np.asarray(kp2)
+
+    F, mask = cv2.findFundamentalMat(kp1[:10], kp2[:10], cv2.FM_8POINT, 3, 0.99, 100)
+    # F, mask = cv2.findFundamentalMat(key_pt1, key_pt2, cv2.FM_8POINT)
+    print(f'funda : {F}, mask : {mask}')
     # funda, mask = cv2.findFundamentalMat(np.array(key_pt1), np.array(key_pt2), cv2.FM_RANSAC,3,0.99,10)
     # print(funda)
 
