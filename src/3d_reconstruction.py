@@ -96,10 +96,16 @@ if __name__ == '__main__':
 
     # reading the image from there paths
     img1, img2 = read_image(first_image_path, second_image_path)
-    img1 = img1.convertTo(img1, cv2.CV_32FC1, 1.0/255.0)
+    if img1.ndim == 3:
+        img1 = img1[:, :, 0]
+    if img2.ndim == 3:
+        img2 = img2[:, :, 0]
+    # img1 = cv2.normalize(img1, None, 255, 0, cv2.NORM_MINMAX, cv2.CV_8UC1)
+    # img2 = cv2.normalize(img2, None, 255, 0, cv2.NORM_MINMAX, cv2.CV_8UC1)
 
     # converting the readed images into the gray scale images
-    gray_pic1, gray_pic2 = convert_to_grayscale(img1, img2)
+    # gray_pic1, gray_pic2 = convert_to_grayscale(img1, img2)
+    gray_pic1, gray_pic2 = img1, img2
 
     # storing the finded key points and descriptors of both of the images
     key_pt1, descrip1, key_pt2, descrip2 = detector(gray_pic1, gray_pic2)
@@ -121,15 +127,24 @@ if __name__ == '__main__':
     # find fundamental matrix
     # opencv api : https://docs.opencv.org/4.x/d9/d0c/group__calib3d.html#ga59b0d57f46f8677fb5904294a23d404a
 
+    # key_pt1 = np.float32(key_pt1)
+    # key_pt2 = np.float32(key_pt2)
+    print(f'{type(key_pt1)}, {key_pt1[0].pt}')
     key_pt1 = np.asarray(key_pt1)
     key_pt2 = np.asarray(key_pt2)
 
     kp1 = key_pt1.copy()
     kp2 = key_pt2.copy()
-    kp1 = np.asarray(kp1)
-    kp2 = np.asarray(kp2)
+    print(f'{type(kp1)}')
+    # print(f'{key_pt1.x}')
+    # kp1 = np.asarray(kp1)
+    # kp2 = np.asarray(kp2)
 
-    F, mask = cv2.findFundamentalMat(kp1[:10], kp2[:10], cv2.FM_8POINT, 3, 0.99, 100)
+    #  - src data type = 17 is not supported
+    # kp1 = cv2.normalize(kp1, None,  0,255, cv2.NORM_MINMAX, cv2.CV_8UC1)
+    # kp2 = cv2.normalize(kp2, None,  0,255, cv2.NORM_MINMAX, cv2.CV_8UC1)
+
+    F, mask = cv2.findFundamentalMat(kp1[:7], kp2[:7], cv2.FM_7POINT, 3, 0.99, 100)
     # F, mask = cv2.findFundamentalMat(key_pt1, key_pt2, cv2.FM_8POINT)
     print(f'funda : {F}, mask : {mask}')
     # funda, mask = cv2.findFundamentalMat(np.array(key_pt1), np.array(key_pt2), cv2.FM_RANSAC,3,0.99,10)
