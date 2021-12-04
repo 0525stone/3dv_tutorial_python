@@ -1,5 +1,6 @@
 """
 출처 : https://www.programcreek.com/python/?project_name=PacktPublishing%2FPractical-Computer-Vision#
+programcreek 에 좋은 소스 많음
 """
 
 import numpy as np
