@@ -92,7 +92,27 @@ def main():
     # compute F matrix between two images
     first_image_path = '../data/s04.jpeg'
     second_image_path = '../data/s05.jpeg'
-    print(compute_fundamental_matrix(first_image_path, second_image_path))
+    # print(compute_fundamental_matrix(first_image_path, second_image_path))
+    F = compute_fundamental_matrix(first_image_path, second_image_path)
+    print(f'Fundamental matrix\n{F}')
+    F_inv = np.linalg.inv(F)
+    print(f'Fundamental inv mat\n{F_inv}')
+    print(f'check\n{np.matmul(F, F_inv)}')
+    print(f'check\n{np.matmul(F_inv, F)}')
+    print(f'check\n{np.dot(F, F_inv)}')
+    print(f'check\n{np.dot(F_inv, F)}')
+
+    print('-'*50)
+    arr = np.array([
+        [[1,2,3],
+         [0,4,5],
+         [1,0,6]]])
+
+    arr_inv = np.linalg.inv(arr)
+
+    print(arr_inv)
+    print(np.dot(arr_inv,arr))
+
 
 
 if __name__ == '__main__':
