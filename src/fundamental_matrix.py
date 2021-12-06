@@ -81,6 +81,10 @@ def compute_fundamental_matrix(filename1, filename2):
 
     # Compute fundamental matrix
     F, mask = cv2.findFundamentalMat(pts1, pts2, cv2.FM_8POINT)
+
+    # match 된것 몇 개만 옮겨서 circle로 찍어보
+
+
     return F
 
 
