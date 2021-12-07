@@ -58,7 +58,7 @@ def brute_force_matcher(des1, des2):
     return matches
 
 
-def compute_fundamental_matrix(filename1, filename2):
+def compute_homography_matrix(filename1, filename2):
     """
     Takes in filenames of two input images
     Return Fundamental matrix computes
@@ -73,9 +73,9 @@ def compute_fundamental_matrix(filename1, filename2):
 
     # top-15 matches check
     output_image = cv2.drawMatches(img1, kp1, img2, kp2, matches[:10], None, flags=2)
-    cv2.imshow('Output image', output_image)
-    cv2.waitKey()
-    cv2.destroyAllWindows()
+    # cv2.imshow('Output image', output_image)
+    # cv2.waitKey()
+    # cv2.destroyAllWindows()
 
  # Fundamental matrices
     # extract points
@@ -94,18 +94,24 @@ def compute_fundamental_matrix(filename1, filename2):
     # F_inv = np.linalg.pinv(F)  # singular matrix error떠서 pinv로 변경
 
     # Find Homography matrix
+       # pts2를 pts1로 변환하는 Homography matrix를 구해줌
     matrix, mask = cv2.findHomography(pts1, pts2, cv2.RANSAC, 5.0)
     matches_mask = mask.ravel().tolist()
 
     h, w, d = img1.shape
 
-    pts = np.float32([[0, 0], [0, h - 1], [w - 1, h - 1], [w - 1, 0]]).reshape(-1, 1, 2)
+    # pts = np.float32([[0, 0], [0, h - 1], [w - 1, h - 1], [w - 1, 0]]).reshape(-1, 1, 2)
 
-    dst = cv2.perspectiveTransform(pts, matrix)
+    # dst = cv2.perspectiveTransform(pts1, matrix)
 
-    homography = cv2.polylines(img1, [np.int32(dst)], True, (255, 0, 0), 3)
+    # homography = cv2.polylines(img1, [np.int32(dst)], True, (255, 0, 0), 3)
+    homography = cv2.warpPerspective(img2, matrix, (w, h))
+    # homography2 = cv2.warpPerspective(img1, matrix, (w, h))
+    # result = cv2.hconcat([homography,homography2])
 
+    cv2.imwrite('homography.png', homography)
     cv2.imshow("Homography", homography)
+    # cv2.imshow("Homography", result)
     cv2.waitKey()
     cv2.destroyAllWindows()
 
@@ -174,8 +180,8 @@ def main():
     # compute F matrix between two images
     first_image_path = '../data/s09.jpeg'
     second_image_path = '../data/s10.jpeg'
-    # print(compute_fundamental_matrix(first_image_path, second_image_path))
-    F = compute_fundamental_matrix(first_image_path, second_image_path)
+
+    H = compute_homography_matrix(first_image_path, second_image_path)
     # print(f'Fundamental matrix\n{F}')
     # F_inv = np.linalg.inv(F)
     # F_inv = np.linalg.pinv(F)
