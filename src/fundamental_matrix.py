@@ -1,4 +1,6 @@
 """
+fundamental matrix 는 perspective projection에 적용할 수 없음
+
 출처 : https://www.programcreek.com/python/?project_name=PacktPublishing%2FPractical-Computer-Vision#
 programcreek 에 좋은 소스 많음
 """
@@ -70,8 +72,8 @@ def compute_fundamental_matrix(filename1, filename2):
     # compute keypoint matches using descriptor
     matches = brute_force_matcher(des1, des2)
 
-    #
-    output_image = cv2.drawMatches(img1, kp1, img2, kp2, matches[:15], None, flags=2)
+    # top-15 matches check
+    output_image = cv2.drawMatches(img1, kp1, img2, kp2, matches[:10], None, flags=2)
     cv2.imshow('Output image', output_image)
     cv2.waitKey()
     cv2.destroyAllWindows()
@@ -81,7 +83,7 @@ def compute_fundamental_matrix(filename1, filename2):
     pts1 = []
     pts2 = []
     for i, (m) in enumerate(matches):
-        if m.distance < 20:
+        if m.distance < 7: # 20
             # print(m.distance)
             pts2.append(kp2[m.trainIdx].pt)
             pts1.append(kp1[m.queryIdx].pt)
@@ -90,7 +92,14 @@ def compute_fundamental_matrix(filename1, filename2):
 
     # Compute fundamental matrix
     F, mask = cv2.findFundamentalMat(pts1, pts2, cv2.FM_8POINT)
+    F_inv = np.linalg.pinv(F)  # singular matrix error떠서 pinv로 변경
 
+
+    A = [[1,2],[3,4]]
+    B = [1,7]
+    print(A)
+    print(np.dot(A,B))
+    print(np.matmul(A, B))
 
     # match 된것 몇 개만 옮겨서 circle로 찍어보기
     print(f'matches count : {len(matches)}')
@@ -103,16 +112,33 @@ def compute_fundamental_matrix(filename1, filename2):
 
         x1 , y1 = kp1[p.queryIdx].pt
         x2, y2 = kp2[p.trainIdx].pt
-        x1n = int(F[0][0] * x1 + F[1][0] * y1 + F[2][0])
-        y1n = int(F[0][1] * x1 + F[1][1] * y1 + F[2][1])
-        x2n = int(F[0][0] * x2 + F[1][0] * y2 + F[2][0])
-        y2n = int(F[0][1] * x2 + F[1][1] * y2 + F[2][1])
+
+    # # Matrix 형태1 : [[행][행]]
+    #     x1n = int(F_inv[0][0] * x1 + F_inv[0][1] * y1 + F_inv[0][2])
+        # y1n = int(F_inv[1][0] * x1 + F_inv[1][1] * y1 + F_inv[1][2])
+        # x2n = int(F_inv[0][0] * x2 + F_inv[0][1] * y2 + F_inv[0][2])
+        # y2n = int(F_inv[1][0] * x2 + F_inv[1][1] * y2 + F_inv[1][2])
+    # Matrix 형태2 : [[열][열]] -> 이게 맞음
+        x1n = int(F_inv[0][0] * x1 + F_inv[1][0] * y1 + F_inv[2][0])
+        y1n = int(F_inv[0][1] * x1 + F_inv[1][1] * y1 + F_inv[2][1])
+        x2n = int(F_inv[0][0] * x2 + F_inv[1][0] * y2 + F_inv[2][0])
+        y2n = int(F_inv[0][1] * x2 + F_inv[1][1] * y2 + F_inv[2][1])
+
+        x1ni = int(F[0][0] * x1 + F[1][0] * y1 + F[2][0])
+        y1ni = int(F[0][1] * x1 + F[1][1] * y1 + F[2][1])
+        x2ni = int(F[0][0] * x2 + F[1][0] * y2 + F[2][0])
+        y2ni = int(F[0][1] * x2 + F[1][1] * y2 + F[2][1])
 
         x1,x2,y1,y2 = int(x1),int(x2),int(y1),int(y2)
+
+        print(f'x1 y1 x2 y2 {x1} {y1} {x2} {y2}')
+        print(f'inv x1 y1 x2 y2 {x1n} {y1n} {x2n} {y2n}')
+        print(f'f x1 y1 x2 y2 {x1ni} {y1ni} {x2ni} {y2ni}')
+
         plt.plot(x1, y1, color='green', marker='o')
         plt.plot(x2, y2, color='red', marker='o')
         plt.plot([x1,x2], [y1,y2], color='blue')
-        plt.plot(x1n, y1n, color='green', marker='v')
+        # plt.plot(x1n, y1n, color='green', marker='v')
         plt.plot(x2n, y2n, color='red', marker='v')
 
 
@@ -135,7 +161,8 @@ def main():
     # print(compute_fundamental_matrix(first_image_path, second_image_path))
     F = compute_fundamental_matrix(first_image_path, second_image_path)
     # print(f'Fundamental matrix\n{F}')
-    F_inv = np.linalg.inv(F)
+    # F_inv = np.linalg.inv(F)
+    # F_inv = np.linalg.pinv(F)
     # print(f'Fundamental inv mat\n{F_inv}')
     # print(f'matmul F, F_inv\n{np.matmul(F, F_inv)}')
     # print(f'matmul F_inv, F\n{np.matmul(F_inv, F)}')
