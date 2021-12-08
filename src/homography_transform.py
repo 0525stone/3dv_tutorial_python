@@ -3,6 +3,13 @@ fundamental matrix 코드 기준으로 뒷부분만 변경
 
 코드 예시 참조 : https://www.pythonpool.com/cv2-findhomography/
 
+data summary
+
+정면 : ss01 ss06 s12
+우/전 : ss02 ss03 ss04 ss05 s13 s14 s15 s16
+좌/전 : ss07 s09 s10 s11
+좌/후 : s01 s06 s07 s08
+우/후 : s02 s03 s04 s05
 """
 
 import numpy as np
