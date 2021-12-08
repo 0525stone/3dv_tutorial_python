@@ -5,6 +5,9 @@ fundamental matrix 코드 기준으로 뒷부분만 변경
 
 data summary
 
+ss : no damage
+s : yes damage on 우/전
+(오른쪽 왼쪽은 영상을 바라보는 기준임)
 정면 : ss01 ss06 s12
 우/전 : ss02 ss03 ss04 ss05 s13 s14 s15 s16
 좌/전 : ss07 s09 s10 s11
