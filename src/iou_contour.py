@@ -14,18 +14,14 @@ import numpy as np
 # import geopandas as gpd
 
 def get_iou(img1, img2):
-  print(f'img1 shape : {img1.shape}')
-  print(f'img2 shape : {img2.shape}')
-  print(f'img1 type : {type(img1)}')
-  print(f'img1 type : {type(img1)}')
+  # print(f'img1 shape : {img1.shape}')
+  # print(f'img2 shape : {img2.shape}')
+  # print(f'img1 type : {type(img1)}')
+  # print(f'img1 type : {type(img1)}')
   cv2.imshow('result', img1*img2)
-  # print(f'result : {}')
   return len(np.where(img1*img2 !=0)[0])
 
 def check_overlap(img_dir):
-
-
-  # os.chdir('C:/Users/user/Desktop/hehe/') #폴더 경로
   img = cv2.imread(img_dir) #파일명
   gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY) #흑백사진으로 변환
   # cv2.imshow('origin', gray)
