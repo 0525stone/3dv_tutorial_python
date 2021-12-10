@@ -85,22 +85,35 @@ def compute_homography_matrix(filename1, filename2):
     print(f'matches : {len(matches)}')
 
     # top-15 matches check
-    output_image = cv2.drawMatches(img1, kp1, img2, kp2, matches[:30], None, flags=2)
+    output_image = cv2.drawMatches(img1, kp1, img2, kp2, matches[:10], None, flags=2)
     cv2.imshow('Output image', output_image)
     cv2.waitKey()
     cv2.destroyAllWindows()
 
- # Fundamental matrices
+ # homogeneous matrices
     # extract points
     pts1 = []
     pts2 = []
     for i, (m) in enumerate(matches):
-        if m.distance < 7: # 20
-            # print(m.distance)
+        if i<11:
+        # if m.distance < 7: # 20
+        #     print(m.distance)
             pts2.append(kp2[m.trainIdx].pt)
             pts1.append(kp1[m.queryIdx].pt)
     pts1 = np.asarray(pts1)
     pts2 = np.asarray(pts2)
+
+    # # extract points
+    # pts1 = []
+    # pts2 = []
+    # for i, (m) in enumerate(matches):
+    #     if m.distance < 7: # 20
+    #         print(m.distance)
+    #         pts2.append(kp2[m.trainIdx].pt)
+    #         pts1.append(kp1[m.queryIdx].pt)
+    # pts1 = np.asarray(pts1)
+    # pts2 = np.asarray(pts2)
+
 
     # # Compute fundamental matrix
     # F, mask = cv2.findFundamentalMat(pts1, pts2, cv2.FM_8POINT)
@@ -120,7 +133,8 @@ def compute_homography_matrix(filename1, filename2):
     # homography = cv2.polylines(img1, [np.int32(dst)], True, (255, 0, 0), 3)
     homography = cv2.warpPerspective(img2, matrix, (w, h))
     # homography2 = cv2.warpPerspective(img1, matrix, (w, h))
-    # result = cv2.hconcat([homography,homography2])
+    homography = cv2.hconcat([img2,homography])
+    homography = cv2.hconcat([homography, img1])
 
     cv2.imwrite('homography.png', homography)
     cv2.imshow("Homography", homography)
@@ -138,7 +152,7 @@ def main():
 
     # compute F matrix between two images
     first_image_path = '../data/check2_.png' # s13, s15 : 비교적 선명한 damage car
-    second_image_path = '../data/check2.jpeg' # ss05
+    second_image_path = '../data/check4_.png' # ss05
 
     H = compute_homography_matrix(first_image_path, second_image_path)
 
