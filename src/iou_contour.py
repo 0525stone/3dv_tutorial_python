@@ -24,15 +24,13 @@ def get_iou(img1, img2):
 def check_overlap(img_dir):
   img = cv2.imread(img_dir) #파일명
   gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY) #흑백사진으로 변환
-  # cv2.imshow('origin', gray)
 
-  # find pixel value to divid mask per classes
+# find pixel value to divid mask per classes
   gray_np = np.array(gray)
   pix = np.unique(gray)
   # print(f'check pixel value {pix}')
 
-  # 여기서 contour 구하는 방법 찾아야지..
-  # binary = np.array([[]])
+# 각 class 별로 binary mask 분리해주는 부분(binary 변수에 각 저장)
   w,h=gray.shape
   binary = np.zeros((2,w,h))
   # print(f'size : {binary.shape}')
@@ -49,8 +47,8 @@ def check_overlap(img_dir):
   # print(f'binary shape 확인 : {binary[1].shape}')
   # print(f'temp shape 확인 : {temp.shape}')
 
-  # 무조건 도로를 먼저 찾게 되므로 binary의 마지막 항이 자동차임
-    # binary[1], temp 두 개가 완벽하게 똑같은데 binary[1]은 에러가 뜸(dtype이라고 하면서... numpy array로 할당하면서 타입이 바뀌나?)
+# 무조건 도로를 먼저 찾게 되므로 binary의 마지막 항이 자동차임
+  # binary[1], temp 두 개가 완벽하게 똑같은데 binary[1]은 에러가 뜸(dtype이라고 하면서... numpy array로 할당하면서 타입이 바뀌나?)
   contours, h = cv2.findContours(temp, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
   # contours, h = cv2.findContours(binary[1], cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
@@ -63,12 +61,13 @@ def check_overlap(img_dir):
   cv2.imshow('car bbox', bbox)
   cv2.imshow('road',binary[0])
 
+# iou 계산해보기
   iou = get_iou(bbox, binary[0])
 
   if iou!=0:
-    print(f"iou is not zero {iou}")
+    print(f"iou is not zero. overlapped. car on the road {iou}")
   else:
-    print("iou is zero")
+    print("iou is zero. no car on the road")
 
   cv2.waitKey(0)
   cv2.destroyAllWindows()
