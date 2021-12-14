@@ -88,8 +88,8 @@ def compute_homography_matrix(filename1, filename2):
     output_image = cv2.drawMatches(img1, kp1, img2, kp2, matches[:10], None, flags=2)
     cv2.imwrite('feature_matching.png', output_image)
     cv2.imshow('Output image', output_image)
-    cv2.waitKey()
-    cv2.destroyAllWindows()
+    # cv2.waitKey()
+    # cv2.destroyAllWindows()
 
  # homogeneous matrices
     # extract points
