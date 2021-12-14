@@ -86,6 +86,7 @@ def compute_homography_matrix(filename1, filename2):
 
     # top-15 matches check
     output_image = cv2.drawMatches(img1, kp1, img2, kp2, matches[:10], None, flags=2)
+    cv2.imwrite('feature_matching.png', output_image)
     cv2.imshow('Output image', output_image)
     cv2.waitKey()
     cv2.destroyAllWindows()
@@ -131,7 +132,7 @@ def compute_homography_matrix(filename1, filename2):
     # dst = cv2.perspectiveTransform(pts1, matrix)
 
     # homography = cv2.polylines(img1, [np.int32(dst)], True, (255, 0, 0), 3)
-    homography = cv2.warpPerspective(img2, matrix, (w, h))
+    homography = cv2.warpPerspective(img1, matrix, (w, h))
     # homography2 = cv2.warpPerspective(img1, matrix, (w, h))
     homography = cv2.hconcat([img2,homography])
     homography = cv2.hconcat([homography, img1])
@@ -151,8 +152,8 @@ def main():
     file_list = sorted(glob.glob(image_dir + '*.png'))
 
     # compute F matrix between two images
-    first_image_path = '../data/check2_.png' # s13, s15 : 비교적 선명한 damage car
-    second_image_path = '../data/check4_.png' # ss05
+    first_image_path = '../data/last1.png' # s13, s15 : 비교적 선명한 damage car
+    second_image_path = '../data/last2.png' # ss05
 
     H = compute_homography_matrix(first_image_path, second_image_path)
 
