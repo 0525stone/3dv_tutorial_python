@@ -12,14 +12,14 @@ def variance_of_laplacian(image):
 	# measure, which is simply the variance of the Laplacian
 	return cv2.Laplacian(image, cv2.CV_64F).var()
 
-home_dir = os.path.expanduser('~')
-print(home_dir)
+# home_dir = os.path.expanduser('~')
+# print(home_dir)
+#
+# print(os.listdir(home_dir))
 
-print(os.listdir(home_dir))
-
-image_root = '../data/light_distract'# os.path.join(home_dir, )
+image_root = '../data/side'# os.path.join(home_dir, )
 image_dir = os.path.join(image_root, 'good')
-good_dir = os.path.join(image_root, 'blur')
+good_dir = os.path.join(image_root, 'scratch')
 image_list = os.listdir(image_dir)
 good_list = os.listdir(good_dir)
 
