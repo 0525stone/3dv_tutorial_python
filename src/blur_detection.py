@@ -23,6 +23,7 @@ good_dir = os.path.join(image_root, 'scratch')
 image_list = os.listdir(image_dir)
 good_list = os.listdir(good_dir)
 
+
 for idx, (imagename, goodname) in enumerate(zip(image_list, good_list)):
     if idx<20:
         # print(image_path)
