@@ -16,6 +16,9 @@ def variance_of_laplacian(image):
 	# measure, which is simply the variance of the Laplacian
 	return cv2.Laplacian(image, cv2.CV_64F).var()
 
+def sobel_filter():
+    pass
+
 
 def record_results():
     """
