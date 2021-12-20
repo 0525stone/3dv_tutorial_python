@@ -37,8 +37,14 @@ def record_results(filename, data, sheetname):
     sheetname='exp1'
     filename = 'experiment_side.xlsx'
 
-    # file이 있으면 append하고 없으면 새로 만들어서 하게 끔
-    writer = pd.ExcelWriter(filename)
+# file이 있으면 append하고 없으면 새로 만들어서 하게 끔
+    if os.path.isfile(filename):
+        print('file exists')
+        writer = pd.ExcelFile(filename)
+        writer.sheet_names
+        print(f'sheet name : {writer.sheet_names}')
+    else:
+        writer = pd.ExcelWriter(filename)
 
     for c in _cls:
         img_dir = os.path.join(data_root, c)
@@ -57,7 +63,7 @@ def record_results(filename, data, sheetname):
             gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
             fm = variance_of_laplacian(gray) # score
             # print(f'{type(fm)},  {fm}')
-            # print(f'{type(img_)},  {img_}')
+            # print(f'{type(imgexp1_)},  {img_}')
             scores[idx] = {c : {'img': img_path, 'score': fm}}
 
             text = 'Not blurry '
@@ -80,44 +86,51 @@ def record_results(filename, data, sheetname):
 
 image_root = '../data/side'# os.path.join(home_dir, )
 image_dir = os.path.join(image_root, 'good')
-good_dir = os.path.join(image_root, 'scratch')
+blur_dir = os.path.join(image_root, 'blur')
+scratch_dir = os.path.join(image_root, 'scratch')
 image_list = os.listdir(image_dir)
-good_list = os.listdir(good_dir)
+blur_list = os.listdir(blur_dir)
+scratch_list = os.listdir(scratch_dir)
 
 
-# record_results()
+_data = [1,2,3]
+
+# record_results('experiment_side.xlsx', _data,'exp1',)
 
 # 근거가 있는지 확인하는 짧은 실험
-for idx, (imagename, goodname) in enumerate(zip(image_list, good_list)):
+for idx, (imagename, blurname, scratchname) in enumerate(zip(image_list, blur_list, scratch_list)):
     if idx<20:
         # print(image_path)
         image_path = os.path.join(image_dir, imagename)
-        good_path = os.path.join(good_dir, goodname)
+        blur_path = os.path.join(blur_dir, blurname)
+        scratch_path = os.path.join(scratch_dir, scratchname)
 
         image = cv2.imread(image_path)
-        image_good = cv2.imread(good_path)
+        image_blur = cv2.imread(blur_path)
+        image_scratch = cv2.imread(scratch_path)
         image = cv2.pyrDown(image)
-        # image = cv2.pyrDown(image)
-        # image_good = cv2.pyrDown(image_good)
-        image_good = cv2.pyrDown(image_good)
-        # image = cv2.pyrDown(image)
-        # image_good = cv2.pyrDown(image_good)
-
-        # gray, gray_good = image, image_good
+        image_blur = cv2.pyrDown(image_blur)
+        image_scratch = cv2.pyrDown(image_scratch)
 
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-        gray_good = cv2.cvtColor(image_good, cv2.COLOR_BGR2GRAY)
-        fm_good = variance_of_laplacian(gray_good)
+        gray_blur = cv2.cvtColor(image_blur, cv2.COLOR_BGR2GRAY)
+        gray_scratch = cv2.cvtColor(image_scratch, cv2.COLOR_BGR2GRAY)
+
         fm = variance_of_laplacian(gray)
+        fm_blur = variance_of_laplacian(gray_blur)
+        fm_scratch = variance_of_laplacian(gray_scratch)
 
         text = "Not Blurry"
 
-        cv2.putText(image, "{}: {:.2f}".format(text, fm), (10, 30),
+        cv2.putText(image, "good {}: {:.2f}".format(text, fm), (10, 30),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 255), 3)
-        cv2.putText(image_good, "{}: {:.2f}".format(text, fm_good), (10, 30),
+        cv2.putText(image_blur, "blur {}: {:.2f}".format(text, fm_blur), (10, 30),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 255), 3)
+        cv2.putText(image_scratch, "scratch {}: {:.2f}".format(text, fm_scratch), (10, 30),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 255), 3)
 
-        final_img = cv2.vconcat([image, image_good])
+        final_img = cv2.vconcat([image, image_blur])
+        final_img = cv2.vconcat([final_img, image_scratch])
         cv2.imshow("Image", final_img)
         cv2.waitKey()
         cv2.destroyAllWindows()
