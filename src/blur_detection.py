@@ -20,7 +20,7 @@ def sobel_filter():
     pass
 
 
-def record_results():
+def record_results(filename, data, sheetname):
     """
     merge cells in excel by python : https://developer-ankiwoong.tistory.com/512
 
@@ -35,8 +35,10 @@ def record_results():
     data_root = '../data/side'
     _cls = ['good','scratch','blur']
     sheetname='exp1'
+    filename = 'experiment_side.xlsx'
 
-    writer = pd.ExcelWriter('experiment_side.xlsx')
+    # file이 있으면 append하고 없으면 새로 만들어서 하게 끔
+    writer = pd.ExcelWriter(filename)
 
     for c in _cls:
         img_dir = os.path.join(data_root, c)
