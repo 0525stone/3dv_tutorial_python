@@ -14,30 +14,51 @@ import random
 import argparse
 
 
-def image_read(image_path):
-    image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
-    image = cv2.pyrDown(image,cv2.IMREAD_GRAYSCALE)
-    # image = cv2.pyrDown(image)
-    # image = cv2.pyrDown(image)
+def image_read(image_path, gray_flag):
+    if(gray_flag):
+        image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
+        image = cv2.pyrDown(image,cv2.IMREAD_GRAYSCALE)
+    else:
+        image = cv2.imread(image_path)
+        image = cv2.pyrDown(image)
     return image
 
 
-def variance_of_laplacian(image, flag = 0):
+def variance_of_laplacian(image, flag):
 	# compute the Laplacian of the image and then return the focus
 	# measure, which is simply the variance of the Laplacian
     # if()
-
 	return cv2.Laplacian(image, cv2.CV_64F).var()
 
 
-def sobel_filter(gray_img):
+def canny_filter(gray_img, flag):
+    canny = cv2.Canny(gray_img, 100, 255)
+    fm = cv2.Canny(gray_img, 100, 255).var()
+    if(flag):
+        cv2.putText(canny, "Blurry: {:.2f}".format(fm), (10, 30),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255, 255, 255), 3)
+
+    return canny, fm
+
+
+def laplacian_filter(gray_img, flag):
+    # print(f'input shape : {gray_img.shape}')
+    lap_img = cv2.Laplacian(gray_img, cv2.CV_8U, ksize=3)
+    fm = cv2.Laplacian(gray_img, cv2.CV_8U, ksize=3).var()
+    if(flag):
+        cv2.putText(lap_img, "Blurry: {:.2f}".format(fm), (10, 30),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255, 255, 255), 3)
+    return lap_img, fm
+
+
+def sobel_filter(gray_img, flag=0):
     sobel = cv2.Sobel(gray_img, cv2.CV_8U, 1, 0, 3)
     # fm = variance_of_laplacian(sobel)
     fm = cv2.Sobel(gray_img, cv2.CV_8U, 1, 0, 3).var()
     h, w = gray_img.shape
-    # print(f'size : {gray_img.shape}')
-    # cv2.putText(sobel, "Not blurry: {:.2f}".format(fm), (10, 30),
-    #             cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255, 255, 255), 3)
+    if(flag):
+        cv2.putText(sobel, "Blurry: {:.2f}".format(fm), (10, 30),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255, 255, 255), 3)
     return sobel, fm
 
 
@@ -111,63 +132,54 @@ blur_list = os.listdir(blur_dir)
 scratch_list = os.listdir(scratch_dir)
 
 _data = [1,2,3]
-show_text = 0
+show_text = 1
+gray_flag = 1
 
 # record_results('experiment_side.xlsx', _data,'exp1',)
 
 
 # 근거가 있는지 확인하는 짧은 실험
 for idx, (imagename, blurname, scratchname) in enumerate(zip(image_list, blur_list, scratch_list)):
-    if idx<3:
+    if idx<5:
         # print(image_path)
         image_path = os.path.join(image_dir, imagename)
         blur_path = os.path.join(blur_dir, blurname)
         scratch_path = os.path.join(scratch_dir, scratchname)
 
-        gray = image_read(image_path)
-        gray_blur = image_read(blur_path)
-        gray_scratch = image_read(scratch_path)
-        image = image_read(image_path)
-        image_blur = image_read(blur_path)
-        image_scratch = image_read(scratch_path)
-        # gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-        # gray_blur = cv2.cvtColor(image_blur, cv2.COLOR_BGR2GRAY)
-        # gray_scratch = cv2.cvtColor(image_scratch, cv2.COLOR_BGR2GRAY)
+        gray = image_read(image_path, gray_flag)
+        gray_blur = image_read(blur_path, gray_flag)
+        gray_scratch = image_read(scratch_path, gray_flag)
 
-# image를 함수에 입력으로 주고 결과를 받는 부분
+        image = image_read(image_path, 0)
+        image_blur = image_read(blur_path, 0)
+        image_scratch = image_read(scratch_path, 0)
 
+
+# Processing part
 # Laplacian part
-        fm = variance_of_laplacian(gray)
-        fm_blur = variance_of_laplacian(gray_blur)
-        fm_scratch = variance_of_laplacian(gray_scratch)
+#         fm = variance_of_laplacian(gray)
+#         fm_blur = variance_of_laplacian(gray_blur)
+#         fm_scratch = variance_of_laplacian(gray_scratch)
+        laplacian, fm = laplacian_filter(gray, show_text)
+        laplacian_blur, fm_blur = laplacian_filter(gray_blur, show_text)
+        laplacian_scratch, fm_scratch = laplacian_filter(gray_scratch, show_text)
 
 # Sobel part
-        # sobel = cv2.Sobel(gray, cv2.CV_8U, 1, 0, 3)
-        # sobel_blur = cv2.Sobel(gray_blur, cv2.CV_8U, 1, 0, 3)
-        # sobel_scratch = cv2.Sobel(gray_scratch, cv2.CV_8U, 1, 0, 3)
-        sobel, sobel_fm = sobel_filter(gray)
-        sobel_blur, sobel_fm_blur = sobel_filter(gray_blur)
-        sobel_scratch, sobel_fm_scratch = sobel_filter(gray_scratch)
-        cv2.putText(sobel, "Not blurry: {:.2f}".format(sobel_fm), (10, 30),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255, 255, 255), 3)
-        cv2.putText(sobel_blur, "Not blurry: {:.2f}".format(sobel_fm_blur), (10, 30),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255, 255, 255), 3)
-        cv2.putText(sobel_scratch, "Not blurry: {:.2f}".format(sobel_fm_scratch), (10, 30),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255, 255, 255), 3)
+        sobel, sobel_fm = sobel_filter(gray, show_text)
+        sobel_blur, sobel_fm_blur = sobel_filter(gray_blur, show_text)
+        sobel_scratch, sobel_fm_scratch = sobel_filter(gray_scratch, show_text)
+
         # laplacian = cv2.Laplacian(gray, cv2.CV_8U, ksize=3)
         # canny = cv2.Canny(image, 100, 255)
 
-        # text = "Not Blurry"
-        # cv2.putText(image, "good {}: {:.2f}".format(text, fm), (10, 30),
-        #             cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 255), 3)
-        # cv2.putText(image_blur, "blur {}: {:.2f}".format(text, fm_blur), (10, 30),
-        #             cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 255), 3)
-        # cv2.putText(image_scratch, "scratch {}: {:.2f}".format(text, fm_scratch), (10, 30),
-        #             cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 255), 3)
 
 # Canny part
-        canny = cv2.Canny(gray, 100, 255)
-        canny_scratch = cv2.Canny(gray_scratch, 100, 255)
+#         canny = cv2.Canny(gray, 100, 255)
+#         canny_blur = cv2.Canny(gray_blur, 100, 255)
+#         canny_scratch = cv2.Canny(gray_scratch, 100, 255)
+        canny, canny_fm = canny_filter(gray, show_text)
+        canny_blur, canny_fm_blur = canny_filter(gray_blur, show_text)
+        canny_scratch,canny_fm_scratch = canny_filter(gray_scratch, show_text)
         # cv2.putText(canny, "variance: {:.2f}".format(cv2.Canny(gray, 100, 255).var()), (10, 30),
         #             cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255, 255, 255), 3)
         # cv2.putText(canny_scratch, "variance: {:.2f}".format(cv2.Canny(gray_scratch, 100, 255).var()), (10, 30),
@@ -187,10 +199,8 @@ for idx, (imagename, blurname, scratchname) in enumerate(zip(image_list, blur_li
 
 
 # show Laplacian part
-        laplace = cv2.Laplacian(gray, cv2.CV_8U, ksize=3)
-        laplace_scratch = cv2.Laplacian(gray_scratch, cv2.CV_8U, ksize=3)
-        final_img2 = cv2.vconcat([laplace, laplace_scratch])
-
+        # show Laplacian part
+        final_img2 = cv2.vconcat([laplacian, laplacian_scratch])
 
         final_img3 = cv2.vconcat([canny, canny_scratch])
 
@@ -199,15 +209,14 @@ for idx, (imagename, blurname, scratchname) in enumerate(zip(image_list, blur_li
         # final_ = cv2.hconcat([final_img, final_img3])
         # cv2.imshow("Origin and Canny",final_)
 
-        # g = cv2.imread(image_path,cv2.IMREAD_GRAYSCALE)
-        # print(f'{final_img.shape}, {final_img3.shape}, {g.shape}')
-        sub_imgs = final_img3 - final_img1
+
+        # sub_imgs = final_img3 - final_img1
 
         cv2.imshow("Image", final_img)
         cv2.imshow("sobel", final_img1)
         cv2.imshow("laplacian", final_img2)
         cv2.imshow("canny", final_img3)
-        cv2.imshow("subtraction", sub_imgs)
+        # cv2.imshow("subtraction", sub_imgs)
         cv2.waitKey()
         cv2.destroyAllWindows()
 
