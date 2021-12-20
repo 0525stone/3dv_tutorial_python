@@ -157,9 +157,6 @@ for idx, (imagename, blurname, scratchname) in enumerate(zip(image_list, blur_li
 
 # Processing part
 # Laplacian part
-#         fm = variance_of_laplacian(gray)
-#         fm_blur = variance_of_laplacian(gray_blur)
-#         fm_scratch = variance_of_laplacian(gray_scratch)
         laplacian, fm = laplacian_filter(gray, show_text)
         laplacian_blur, fm_blur = laplacian_filter(gray_blur, show_text)
         laplacian_scratch, fm_scratch = laplacian_filter(gray_scratch, show_text)
@@ -169,50 +166,25 @@ for idx, (imagename, blurname, scratchname) in enumerate(zip(image_list, blur_li
         sobel_blur, sobel_fm_blur = sobel_filter(gray_blur, show_text)
         sobel_scratch, sobel_fm_scratch = sobel_filter(gray_scratch, show_text)
 
-        # laplacian = cv2.Laplacian(gray, cv2.CV_8U, ksize=3)
-        # canny = cv2.Canny(image, 100, 255)
-
-
 # Canny part
-#         canny = cv2.Canny(gray, 100, 255)
-#         canny_blur = cv2.Canny(gray_blur, 100, 255)
-#         canny_scratch = cv2.Canny(gray_scratch, 100, 255)
         canny, canny_fm = canny_filter(gray, show_text)
         canny_blur, canny_fm_blur = canny_filter(gray_blur, show_text)
         canny_scratch,canny_fm_scratch = canny_filter(gray_scratch, show_text)
-        # cv2.putText(canny, "variance: {:.2f}".format(cv2.Canny(gray, 100, 255).var()), (10, 30),
-        #             cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255, 255, 255), 3)
-        # cv2.putText(canny_scratch, "variance: {:.2f}".format(cv2.Canny(gray_scratch, 100, 255).var()), (10, 30),
-        #             cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255, 255, 255), 3)
 
 
-# show image part
-        # final_img = cv2.vconcat([image, image_blur])
-        # final_img = cv2.vconcat([final_img, image_scratch])
+# concatenate to show
         final_img = cv2.vconcat([image, image_scratch])
-
-
-# show Sobel part
-        # final_img1 = cv2.vconcat([sobel, sobel_blur])
-        # final_img1 = cv2.vconcat([final_img1, sobel_scratch])
         final_img1 = cv2.vconcat([sobel, sobel_scratch])
-
-
-# show Laplacian part
-        # show Laplacian part
         final_img2 = cv2.vconcat([laplacian, laplacian_scratch])
-
         final_img3 = cv2.vconcat([canny, canny_scratch])
 
 
-
-        # final_ = cv2.hconcat([final_img, final_img3])
-        # cv2.imshow("Origin and Canny",final_)
-
-
+# subtract part
         # sub_imgs = final_img3 - final_img1
 
-        cv2.imshow("Image", final_img)
+
+# final showing output part
+        # cv2.imshow("Image", final_img)
         cv2.imshow("sobel", final_img1)
         cv2.imshow("laplacian", final_img2)
         cv2.imshow("canny", final_img3)
