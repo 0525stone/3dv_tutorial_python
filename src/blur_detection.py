@@ -21,7 +21,15 @@ def image_read(image_path, gray_flag):
     else:
         image = cv2.imread(image_path)
         image = cv2.pyrDown(image)
-    return image
+
+    if(len(image.shape)==2):
+        h,w = image.shape
+    elif(len(image.shape)==3):
+        h,w,c = image.shape
+    else:
+        print('dimension of image is over 3, need to check.')
+
+    return image[:,int(w/3):int(2*w/3)]
 
 
 def variance_of_laplacian(image, flag):
@@ -178,10 +186,7 @@ for idx, (imagename, blurname, scratchname) in enumerate(zip(image_list, blur_li
         final_img2 = cv2.vconcat([laplacian, laplacian_scratch])
         final_img3 = cv2.vconcat([canny, canny_scratch])
 
-
 # subtract part
-        # sub_imgs = final_img3 - final_img1
-
 
 # final showing output part
         # cv2.imshow("Image", final_img)
@@ -213,7 +218,6 @@ for idx, (imagename, blurname, scratchname) in enumerate(zip(image_list, blur_li
         plt.xlim([-10,50])
 
         # plt.show()
-
 
     else:
         break
