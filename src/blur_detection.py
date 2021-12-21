@@ -7,6 +7,7 @@ from imutils import paths
 from pandas import DataFrame
 import pandas as pd
 from matplotlib import pyplot as plt
+from itertools import cycle
 
 import os
 import cv2
@@ -146,9 +147,10 @@ gray_flag = 1
 
 
 # dictionary to save scores
-lap_dict = {'good':{}, 'blur':{}, 'scratch': {}}
-canny_dict = {'good':{}, 'blur':{}, 'scratch': {}}
-sobel_dict = {'good':{}, 'blur':{}, 'scratch': {}}
+lap_dict = {'good':{},'blur':{},'scratch':{}}
+canny_dict = {'good':{},'blur':{},'scratch':{}}
+sobel_dict = {'good':{},'blur':{},'scratch':{}}
+
 
 
 # 근거가 있는지 확인하는 짧은 실험
@@ -179,6 +181,13 @@ for idx, (imagename, blurname, scratchname) in enumerate(zip(image_list, blur_li
     lap_dict['scratch'][scratchname] = fm_scratch
     lap_dict['blur'][blurname] = fm_blur
 
+    # lap_dict['good']['imagename'] = imagename
+    # lap_dict['scratch']['imagename'] = blurname
+    # lap_dict['blur']['imagename'] = scratchname
+    # lap_dict['good']['scores'] = fm
+    # lap_dict['scratch']['scores'] = fm_scratch
+    # lap_dict['blur']['scores'] = fm_blur
+
 # Sobel part
     sobel, sobel_fm = sobel_filter(gray, show_text)
     sobel_blur, sobel_fm_blur = sobel_filter(gray_blur, show_text)
@@ -186,6 +195,9 @@ for idx, (imagename, blurname, scratchname) in enumerate(zip(image_list, blur_li
     sobel_dict['good'][imagename] = sobel_fm
     sobel_dict['scratch'][scratchname] = sobel_fm_scratch
     sobel_dict['blur'][blurname] = sobel_fm_blur
+    # sobel_dict['good'][idx] = {'imagename': imagename, 'score':sobel_fm}
+    # sobel_dict['scratch'][idx] = {'imagename': scratchname, 'score':sobel_fm_scratch}
+    # sobel_dict['blur'][idx] = {'imagename': blurname, 'score':sobel_fm_blur}
 
 # Canny part
     canny, canny_fm = canny_filter(gray, show_text)
@@ -194,6 +206,7 @@ for idx, (imagename, blurname, scratchname) in enumerate(zip(image_list, blur_li
     canny_dict['good'][imagename] = canny_fm
     canny_dict['scratch'][scratchname] = canny_fm_scratch
     canny_dict['blur'][blurname] = canny_fm_blur
+
 
 # # save in excel file
 #     writer = pd.ExcelWriter('experiment_.xlsx')
@@ -256,9 +269,13 @@ for idx, (imagename, blurname, scratchname) in enumerate(zip(image_list, blur_li
 # save in excel file
 writer = pd.ExcelWriter('experiment_.xlsx')
 
-canny_df = DataFrame(canny_dict)
-sobel_df = DataFrame(sobel_dict)
-lap_df = DataFrame(lap_dict)
+canny_df = DataFrame(canny_dict).reset_index()
+# sobel_df = DataFrame(sobel_dict).reset_index()
+lap_df = DataFrame(lap_dict).reset_index()
+
+new_sobel = {'good name':sobel_dict['good'].keys(),'good score':sobel_dict['good'].values(),'scratch name':sobel_dict['scratch'].keys(),
+             'scratch score':sobel_dict['scratch'].values(),'blur name':sobel_dict['blur'].keys(),'blur score':sobel_dict['blur'].values() }
+sobel_df = DataFrame(new_sobel)
 
 canny_df.to_excel(writer, sheet_name='canny')
 sobel_df.to_excel(writer, sheet_name='sobel')
