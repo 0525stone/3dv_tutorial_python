@@ -35,7 +35,6 @@ def image_read(image_path, gray_flag):
 def variance_of_laplacian(image, flag):
 	# compute the Laplacian of the image and then return the focus
 	# measure, which is simply the variance of the Laplacian
-    # if()
 	return cv2.Laplacian(image, cv2.CV_64F).var()
 
 
@@ -140,86 +139,129 @@ blur_list = os.listdir(blur_dir)
 scratch_list = os.listdir(scratch_dir)
 
 _data = [1,2,3]
-show_text = 1
+show_text = 0
 gray_flag = 1
 
 # record_results('experiment_side.xlsx', _data,'exp1',)
 
 
+# dictionary to save scores
+lap_dict = {'good':{}, 'blur':{}, 'scratch': {}}
+canny_dict = {'good':{}, 'blur':{}, 'scratch': {}}
+sobel_dict = {'good':{}, 'blur':{}, 'scratch': {}}
+
+
 # 근거가 있는지 확인하는 짧은 실험
 for idx, (imagename, blurname, scratchname) in enumerate(zip(image_list, blur_list, scratch_list)):
-    if idx<5:
-        # print(image_path)
-        image_path = os.path.join(image_dir, imagename)
-        blur_path = os.path.join(blur_dir, blurname)
-        scratch_path = os.path.join(scratch_dir, scratchname)
+    # if idx<70:
+# #####################################################################################################################
+    print(f'{idx+1} th image, picture :')
+    # print(image_path)
+    image_path = os.path.join(image_dir, imagename)
+    blur_path = os.path.join(blur_dir, blurname)
+    scratch_path = os.path.join(scratch_dir, scratchname)
 
-        gray = image_read(image_path, gray_flag)
-        gray_blur = image_read(blur_path, gray_flag)
-        gray_scratch = image_read(scratch_path, gray_flag)
+    gray = image_read(image_path, gray_flag)
+    gray_blur = image_read(blur_path, gray_flag)
+    gray_scratch = image_read(scratch_path, gray_flag)
 
-        image = image_read(image_path, 0)
-        image_blur = image_read(blur_path, 0)
-        image_scratch = image_read(scratch_path, 0)
+    image = image_read(image_path, 0)
+    image_blur = image_read(blur_path, 0)
+    image_scratch = image_read(scratch_path, 0)
 
 
 # Processing part
 # Laplacian part
-        laplacian, fm = laplacian_filter(gray, show_text)
-        laplacian_blur, fm_blur = laplacian_filter(gray_blur, show_text)
-        laplacian_scratch, fm_scratch = laplacian_filter(gray_scratch, show_text)
+    laplacian, fm = laplacian_filter(gray, show_text)
+    laplacian_blur, fm_blur = laplacian_filter(gray_blur, show_text)
+    laplacian_scratch, fm_scratch = laplacian_filter(gray_scratch, show_text)
+    lap_dict['good'][imagename] = fm
+    lap_dict['scratch'][scratchname] = fm_scratch
+    lap_dict['blur'][blurname] = fm_blur
 
 # Sobel part
-        sobel, sobel_fm = sobel_filter(gray, show_text)
-        sobel_blur, sobel_fm_blur = sobel_filter(gray_blur, show_text)
-        sobel_scratch, sobel_fm_scratch = sobel_filter(gray_scratch, show_text)
+    sobel, sobel_fm = sobel_filter(gray, show_text)
+    sobel_blur, sobel_fm_blur = sobel_filter(gray_blur, show_text)
+    sobel_scratch, sobel_fm_scratch = sobel_filter(gray_scratch, show_text)
+    sobel_dict['good'][imagename] = sobel_fm
+    sobel_dict['scratch'][scratchname] = sobel_fm_scratch
+    sobel_dict['blur'][blurname] = sobel_fm_blur
 
 # Canny part
-        canny, canny_fm = canny_filter(gray, show_text)
-        canny_blur, canny_fm_blur = canny_filter(gray_blur, show_text)
-        canny_scratch,canny_fm_scratch = canny_filter(gray_scratch, show_text)
+    canny, canny_fm = canny_filter(gray, show_text)
+    canny_blur, canny_fm_blur = canny_filter(gray_blur, show_text)
+    canny_scratch,canny_fm_scratch = canny_filter(gray_scratch, show_text)
+    canny_dict['good'][imagename] = canny_fm
+    canny_dict['scratch'][scratchname] = canny_fm_scratch
+    canny_dict['blur'][blurname] = canny_fm_blur
+
+# # save in excel file
+#     writer = pd.ExcelWriter('experiment_.xlsx')
+#
+#     canny_df = DataFrame(canny_dict).T
+#     sobel_df = DataFrame(sobel_dict).T
+#     lap_df = DataFrame(lap_dict).T
+#
+#     canny_df.to_excel(writer, sheet_name='canny')
+#     sobel_df.to_excel(writer, sheet_name='sobel')
+#     lap_df.to_excel(writer, sheet_name='laplacian')
+#
+#     writer.save()
+
 
 
 # concatenate to show
-        final_img = cv2.vconcat([image, image_scratch])
-        final_img1 = cv2.vconcat([sobel, sobel_scratch])
-        final_img2 = cv2.vconcat([laplacian, laplacian_scratch])
-        final_img3 = cv2.vconcat([canny, canny_scratch])
+    final_img = cv2.vconcat([image, image_scratch])
+    final_img1 = cv2.vconcat([sobel, sobel_scratch])
+    final_img2 = cv2.vconcat([laplacian, laplacian_scratch])
+    final_img3 = cv2.vconcat([canny, canny_scratch])
 
 # subtract part
 
 # final showing output part
-        # cv2.imshow("Image", final_img)
-        cv2.imshow("sobel", final_img1)
-        cv2.imshow("laplacian", final_img2)
-        cv2.imshow("canny", final_img3)
-        # cv2.imshow("subtraction", sub_imgs)
-        cv2.waitKey()
-        cv2.destroyAllWindows()
+    # cv2.imshow("Image", final_img)
+    # cv2.imshow("sobel", final_img1)
+    # cv2.imshow("laplacian", final_img2)
+    # cv2.imshow("canny", final_img3)
+    # # cv2.imshow("subtraction", sub_imgs)
+    # cv2.waitKey()
+    # cv2.destroyAllWindows()
 
-    # histogram check
-        hist_img1 = cv2.calcHist([gray],[0], None, [256],[0,256])
-        hist_blur1 = cv2.calcHist([gray_blur], [0], None, [256], [0, 256])
-        hist_scratch1 = cv2.calcHist([gray_scratch], [0], None, [256], [0, 256])
+# # histogram check
+#     hist_img1 = cv2.calcHist([gray],[0], None, [256],[0,256])
+#     hist_blur1 = cv2.calcHist([gray_blur], [0], None, [256], [0, 256])
+#     hist_scratch1 = cv2.calcHist([gray_scratch], [0], None, [256], [0, 256])
+#
+#     hist_img2 = cv2.calcHist([sobel], [0], None, [256], [0, 256])
+#     hist_blur2 = cv2.calcHist([sobel_blur], [0], None, [256], [0, 256])
+#     hist_scratch2 = cv2.calcHist([sobel_scratch], [0], None, [256], [0, 256])
+#
+#     plt.figure(figsize=(40,40))
+#
+#     plt.subplot(231),plt.imshow(gray,'gray'),plt.title('good')
+#     plt.subplot(232), plt.imshow(gray_blur, 'gray'), plt.title('blur')
+#     plt.subplot(233), plt.imshow(gray_scratch, 'gray'), plt.title('scratch')
+#
+#     plt.subplot(234), plt.plot(hist_img1, color='r'), plt.plot(hist_blur1, color='g'), plt.plot(hist_scratch1, color='b'), plt.title('histogram of gray')
+#     plt.xlim([0,256])
+#     plt.subplot(235), plt.plot(hist_img2, color='r'), plt.plot(hist_blur2, color='g'), plt.plot(hist_scratch2, color='b'), plt.title('histogram of sobel')
+#     plt.xlim([-10,50])
 
-        hist_img2 = cv2.calcHist([sobel], [0], None, [256], [0, 256])
-        hist_blur2 = cv2.calcHist([sobel_blur], [0], None, [256], [0, 256])
-        hist_scratch2 = cv2.calcHist([sobel_scratch], [0], None, [256], [0, 256])
-
-        plt.figure(figsize=(40,40))
-
-        plt.subplot(231),plt.imshow(gray,'gray'),plt.title('good')
-        plt.subplot(232), plt.imshow(gray_blur, 'gray'), plt.title('blur')
-        plt.subplot(233), plt.imshow(gray_scratch, 'gray'), plt.title('scratch')
-
-        plt.subplot(234), plt.plot(hist_img1, color='r'), plt.plot(hist_blur1, color='g'), plt.plot(hist_scratch1, color='b'), plt.title('histogram of gray')
-        plt.xlim([0,256])
-        plt.subplot(235), plt.plot(hist_img2, color='r'), plt.plot(hist_blur2, color='g'), plt.plot(hist_scratch2, color='b'), plt.title('histogram of sobel')
-        plt.xlim([-10,50])
-
-        # plt.show()
-
-    else:
-        break
+    # plt.show()
+# #####################################################################################################################
+#     else:
+#         break
 
 
+# save in excel file
+writer = pd.ExcelWriter('experiment_.xlsx')
+
+canny_df = DataFrame(canny_dict)
+sobel_df = DataFrame(sobel_dict)
+lap_df = DataFrame(lap_dict)
+
+canny_df.to_excel(writer, sheet_name='canny')
+sobel_df.to_excel(writer, sheet_name='sobel')
+lap_df.to_excel(writer, sheet_name='laplacian')
+
+writer.save()
