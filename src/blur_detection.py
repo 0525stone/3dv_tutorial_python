@@ -1,4 +1,9 @@
 """
+Filter
+- Canny
+- Laplacian
+- Sobel
+
 출처 : https://gist.github.com/Pawe1/0e0b2fe4010e4ac6275e1aa1381ddaca
 
 실험 기록 위하여 엑셀 시트 접근, 데이터 기록 파트 추가
@@ -64,7 +69,9 @@ def image_read(image_path, gray_flag):
         image = cv2.pyrDown(image,cv2.IMREAD_GRAYSCALE)
     else:
         image = cv2.imread(image_path)
+        image = cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
         image = cv2.pyrDown(image)
+
 
     if(len(image.shape)==2):
         h,w = image.shape
@@ -208,7 +215,7 @@ scratch_list = os.listdir(scratch_dir)
 
 _data = [1,2,3]
 show_text = 0
-gray_flag = 1
+gray_flag = 0
 
 # record_results('experiment_side.xlsx', _data,'exp1',)
 
