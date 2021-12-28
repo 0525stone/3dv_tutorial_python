@@ -41,24 +41,20 @@ def img_list_from_json(json_name):
     return img_list
 
 
-def random_sample_check(label_file):
+def random_sample_check(label_file,n_samples):
     with open(label_file,'r') as f:
         readList = f.readlines()
-        # print(readList)
 
-    r_sample = random.sample(readList, 100)
+    r_sample = random.sample(readList, n_samples)
     print(f'random sample {len(r_sample)}')
     return r_sample
 
 def check_image(img_dir):
     home_dir = os.path.expanduser('~')
     img_temp = img_dir.split('/8TB/')[1]
-    img_name = os.path.join(img_temp)
+    img_name = img_temp.split('\n')[0]
+    image = cv2.imread(img_name)#,cv2.IMREAD_GRAYSCALE)
 
-    print('name : ', img_name)
-    # img_name = '100316107_0597_IN.jpg'
-    image = cv2.imread(img_name)
-    # image = cv2.imread(home_dir+img_temp)
     cv2.imshow("check", image)
     cv2.waitKey()
     cv2.destroyAllWindows()
@@ -76,7 +72,7 @@ img_list = []
 print(home_dir)
 print(file_dir)
 
-r_sample = random_sample_check('train_set_ver1.txt')
+r_sample = random_sample_check('train_set_ver1.txt',10)
 
 for img_ in r_sample:
     check_image(img_)
