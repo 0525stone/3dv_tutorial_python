@@ -53,13 +53,21 @@ def check_image(img_dir):
     home_dir = os.path.expanduser('~')
     img_temp = img_dir.split('/8TB/')[1]
     img_name = img_temp.split('\n')[0]
+    print(img_dir)
     image = cv2.imread(img_name)#,cv2.IMREAD_GRAYSCALE)
 
     cv2.imshow("check", image)
-    cv2.waitKey()
-    cv2.destroyAllWindows()
-
-
+    # record if it is noise or not by  waitkey
+    # cv2.waitKey() # reference
+    key = cv2.waitKey()
+    if key == ord('f'):
+        cv2.destroyAllWindows()
+        return True, img_name
+    else:
+        cv2.destroyAllWindows()
+        return False, img_name
+# ################################################################################################
+# Check image list
 home_dir = os.path.expanduser('~') # home directory check
 
 file_dir = "./git/numberplate/data/detector/*_electric_append.json"
@@ -72,12 +80,26 @@ img_list = []
 print(home_dir)
 print(file_dir)
 
-r_sample = random_sample_check('train_set_ver1.txt',10)
+r_sample = random_sample_check('train_set_ver1.txt',100)
 
+noise_list = []
 for img_ in r_sample:
-    check_image(img_)
+    _flag, img_name = check_image(img_)
+    if (_flag):
+        noise_list.append(img_name)
+print(f'noise picture : {len(noise_list)}')
 
-
+# ################################################################################################
+# # making image list from json
+# home_dir = os.path.expanduser('~') # home directory check
+#
+# file_dir = "./git/numberplate/data/detector/*_electric_append.json"
+# file_dir = os.path.join(home_dir, file_dir)
+# file_list1 = glob.glob(file_dir)
+# file_list1.sort()
+#
+# img_list = []
+#
 # # first list
 # for idx, file_name in enumerate(file_list1):
 #     temp_img_list = img_list_from_json(file_name)
@@ -86,10 +108,10 @@ for img_ in r_sample:
 #     print(f'after read json file : {len(img_list)}')
 #
 # # second list
-# file_list2 = "./git/numberplate/data/detector/coco_numberplate_to_text_pannel_convert.json"
-# file_list2 = os.path.join(home_dir, file_list2)
-# # temp_img_list = img_list_from_json(file_list2)
-# img_list.extend(temp_img_list)
+# # file_list2 = "./git/numberplate/data/detector/coco_numberplate_to_text_pannel_convert.json"
+# # file_list2 = os.path.join(home_dir, file_list2)
+# # # temp_img_list = img_list_from_json(file_list2)
+# # img_list.extend(temp_img_list)
 #
 # print(f'after read second json file : {len(img_list)}')
 #
