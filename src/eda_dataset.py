@@ -19,6 +19,7 @@ import re
 import pickle
 
 
+
 def img_list_from_json(json_name):
     """
     random sampling 하여 데이터를 직접 확인하기 위한 코드
@@ -44,16 +45,17 @@ def img_list_from_json(json_name):
 def random_sample_check(label_file,n_samples):
     with open(label_file,'r') as f:
         readList = f.readlines()
-
+    random.seed(25)
     r_sample = random.sample(readList, n_samples)
     print(f'random sample {len(r_sample)}')
     return r_sample
+
 
 def check_image(img_dir):
     home_dir = os.path.expanduser('~')
     img_temp = img_dir.split('/8TB/')[1]
     img_name = img_temp.split('\n')[0]
-    print(img_dir)
+    print(img_name)
     image = cv2.imread(img_name)#,cv2.IMREAD_GRAYSCALE)
 
     cv2.imshow("check", image)
@@ -66,6 +68,8 @@ def check_image(img_dir):
     else:
         cv2.destroyAllWindows()
         return False, img_name
+
+
 # ################################################################################################
 # Check image list
 home_dir = os.path.expanduser('~') # home directory check
@@ -80,7 +84,7 @@ img_list = []
 print(home_dir)
 print(file_dir)
 
-r_sample = random_sample_check('train_set_ver1.txt',100)
+r_sample = random_sample_check('train_set_ver1.txt',10)
 
 noise_list = []
 for img_ in r_sample:
@@ -88,6 +92,7 @@ for img_ in r_sample:
     if (_flag):
         noise_list.append(img_name)
 print(f'noise picture : {len(noise_list)}')
+
 
 # ################################################################################################
 # # making image list from json
