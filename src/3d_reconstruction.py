@@ -83,8 +83,8 @@ def display_output(pic1, kpt1, pic2, kpt2, best_match,savename=''):
 # main function
 if __name__ == '__main__':
     # giving the path of both of the images
-    first_image_path = '../data/s04.jpeg'
-    second_image_path = '../data/s05.jpeg'
+    first_image_path = '../data/s09.jpeg'
+    second_image_path = '../data/s10.jpeg'
 
     # save file name
     save1 = first_image_path.split('/')[-1]
@@ -116,7 +116,7 @@ if __name__ == '__main__':
     print(f'Total Number of Features matches found are {tot_feature_matches}')
 
     # after drawing the feature matches displaying the output image
-    # display_output(gray_pic1, key_pt1, gray_pic2, key_pt2, number_of_matches[:50],savename)
+    display_output(gray_pic1, key_pt1, gray_pic2, key_pt2, number_of_matches[:50],savename)
 
     # draw matches manually
     # display_output_
@@ -144,9 +144,9 @@ if __name__ == '__main__':
     # kp1 = cv2.normalize(kp1, None,  0,255, cv2.NORM_MINMAX, cv2.CV_8UC1)
     # kp2 = cv2.normalize(kp2, None,  0,255, cv2.NORM_MINMAX, cv2.CV_8UC1)
 
-    F, mask = cv2.findFundamentalMat(kp1[:7], kp2[:7], cv2.FM_7POINT, 3, 0.99, 100)
+    # F, mask = cv2.findFundamentalMat(kp1[:7], kp2[:7], cv2.FM_7POINT, 3, 0.99, 100)
     # F, mask = cv2.findFundamentalMat(key_pt1, key_pt2, cv2.FM_8POINT)
-    print(f'funda : {F}, mask : {mask}')
+    # print(f'funda : {F}, mask : {mask}')
     # funda, mask = cv2.findFundamentalMat(np.array(key_pt1), np.array(key_pt2), cv2.FM_RANSAC,3,0.99,10)
     # print(funda)
 
