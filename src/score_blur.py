@@ -1,7 +1,10 @@
 """
 Blur detection
+- opencv
 - input image
-
+- crop image
+- get score
+- output boolean_check(threshold로), crop_img
 
 Memo from notes
 - 문제 : 번호판 부분이 blur 되어 있는 것에 대한 지표를 뽑아야함
@@ -21,15 +24,41 @@ import os
 import cv2
 
 
-def blurry_check(image, threshold=1000):
+def score_blur(image, threshold=1000):
 # cropped image
-    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    w = image.shape[1]
+    crop_image = image[: , int(w/3): int(2*w/3)]
+
+    gray = cv2.cvtColor(crop_image, cv2.COLOR_BGR2GRAY)
     score = cv2.Canny(gray, 100, 255).var()
 
     if(score>threshold):
-        return True
+        return True, crop_image
     else:
-        return False
+        return False, crop_image
 
+# print('test for score_blur')
+#
+# file_dir = '../data/side/scratch'
+# file_list = os.listdir(file_dir)
+# print(f'files : {len(file_list)}, {type(file_list)}')
+#
+# import random
+# r_seed = 25
+# n_sample = 10
+#
+# random.seed(r_seed)
+# r_sample = random.sample(file_list, n_sample)
+#
+# print(r_sample)
+#
+# for samplename in r_sample:
+#     img_dir = os.path.join(file_dir, samplename)
+#     img = cv2.imread(img_dir)
+#
+#     _bool, img = score_blur(img)
+#     cv2.imshow('check',img)
+#     cv2.waitKey(0)
+#     cv2.destroyAllWindows()
 
 
