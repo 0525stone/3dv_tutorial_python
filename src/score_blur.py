@@ -1,5 +1,7 @@
 """
 Blur detection
+- input image
+
 
 Memo from notes
 - 문제 : 번호판 부분이 blur 되어 있는 것에 대한 지표를 뽑아야함
@@ -11,8 +13,23 @@ Memo from notes
     - Sobel : 1차 미분 필터
     - Canny : sobel filter + hyteresis thresholding 으로 에지 여부 판단 -> 결과 제일 명확하게 나옴
 """
+from pandas import DataFrame
+from matplotlib import pyplot as plt
+
+import pandas as pd
+import os
+import cv2
 
 
+def blurry_check(image, threshold=1000):
+# cropped image
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    score = cv2.Canny(gray, 100, 255).var()
+
+    if(score>threshold):
+        return True
+    else:
+        return False
 
 
 
